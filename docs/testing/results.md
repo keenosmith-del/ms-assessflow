@@ -18,11 +18,11 @@
 | Bicep local compile | Passed, no errors/warnings; no Azure deployment |
 | API + web container builds | Both passed locally; readiness/auth/SPA/CSP smoke and packaged 13-case evaluation passed |
 | Synthetic PostgreSQL backup/restore | pg_dump/pg_restore succeeded; requests/decisions/audit counts matched: 6/2/41 |
-| GitHub Actions at c579c12 | All four jobs succeeded: backend, frontend, browser, containers |
+| GitHub Actions at 2b93b5f | All four jobs succeeded: backend, frontend, browser, containers |
 
-Remote run: https://github.com/keenosmith-del/ms-assessflow/actions/runs/40306168810
-Later commits are checked separately in the release manifest; this result refers to the exact
-commit above, not an assertion that every future commit already passed CI.
+Remote run: https://github.com/keenosmith-del/ms-assessflow/actions/runs/40307549004
+This result refers to implementation commit 2b93b5f; the subsequent documentation-only commit
+records its hashes and results without changing executable source.
 
 Executed backend commands from backend:
 ```sh

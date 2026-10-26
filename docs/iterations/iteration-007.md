@@ -9,8 +9,8 @@ external gates. Do not call compiled templates or mock adapters live verificatio
 Executed: PostgreSQL suite 65 passed; SQLite suite 64 passed/1 skipped; Vitest 6; Playwright 3;
 Ruff, ESLint, Vite, OpenAPI/Swagger validators, Bicep compile, pip check and dependency scans passed.
 Synthetic PostgreSQL backup/restore succeeded with matching 6 requests, 2 decisions, 41 audit rows.
-Remote CI for c579c12: all four jobs green. Final image smoke and exact release hashes are recorded
+Remote CI for 2b93b5f: all four jobs green. Final image smoke and exact release hashes are recorded
 in release-manifest.md after verification.
 Results: local workflow system and tenant-ready source assets delivered; actual tenant validation
 and production deployment are not claimed. Limitations and external work: docs/HANDOVER.md.
-Git commit hash: recorded in release-manifest.md after this implementation commit.
+Git commit hash: `2b93b5f81283d0bc6fa1af4478910ce7525b1fde`.
