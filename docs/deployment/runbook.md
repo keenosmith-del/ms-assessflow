@@ -44,7 +44,8 @@ not secrets. Configure its CSP connect-src to the intended API/identity domains 
 1. Obtain approval for costs, region, networking, subscription, licences and tenant permissions.
 2. Review infra parameters, unique naming and minimum SKUs. Template compiles locally; compilation
    does not prove resource availability or deployability in a subscription. Use ARM what-if only
-   in an authorised environment. There is no deployment-triggering GitHub Actions workflow.
+   in an authorised environment. The separate manually approved staging workflow updates existing apps only; it does not
+   apply this foundation. See [staging workflow](staging-workflow.md).
 3. Supply secure postgresPassword from a secret source and deploy reviewed template later.
    API intentionally fails startup until Key Vault secret access and required configuration work.
 4. Grant API managed identity Key Vault Secrets User on the vault and AcrPull on private registry;
@@ -64,6 +65,10 @@ not secrets. Configure its CSP connect-src to the intended API/identity domains 
    actual flow callbacks; publish agent only after approval. Record results and monitoring evidence.
 
 ## CI/CD
+The separate [staging deployment workflow](staging-workflow.md) requires manual dispatch,
+a protected environment, independent approval, exact-SHA successful CI and Azure OIDC.
+It is implemented but has not been executed or activated.
+
 verify.yml runs backend formatting/lint, tests with PostgreSQL, clean migrations, generated
 contract drift, limited secret scan, frontend lint/tests/build/audit, browser workflows, container
 builds and Bicep compile. Ordinary CI uses no paid Azure credentials. Live cloud validation is a

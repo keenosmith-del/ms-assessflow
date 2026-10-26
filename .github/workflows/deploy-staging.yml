@@ -1,0 +1,177 @@
+name: Deploy Azure staging (manual approval)
+run-name: Staging ${{ inputs.operation }} ${{ inputs.release_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: Full lowercase commit SHA on main with successful Verify AssessFlow CI
+        required: true
+        type: string
+      operation:
+        description: Build a release or restore previously built, approved image digests
+        required: true
+        default: deploy
+        type: choice
+        options: [deploy, rollback]
+      confirmation:
+        description: Type DEPLOY STAGING (dispatch alone never bypasses environment review)
+        required: true
+        type: string
+      schema_compatible:
+        description: I reviewed schema compatibility and the backup/recovery plan
+        required: true
+        default: false
+        type: boolean
+      api_digest:
+        description: Rollback only - previous API sha256 digest from a successful release manifest
+        type: string
+      web_digest:
+        description: Rollback only - previous web sha256 digest from the same release manifest
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: assessflow-azure-staging
+  cancel-in-progress: false
+jobs:
+  preflight:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ inputs.release_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      SCHEMA_COMPATIBLE: ${{ inputs.schema_compatible }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Refuse missing environment protection, unverified commits or implicit consent
+        run: python scripts/release_guard.py
+      - name: Compile infrastructure without Azure authentication or deployment
+        run: az bicep build --file infra/main.bicep --outfile /tmp/assessflow-foundation.json
+  staging:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: azure-staging
+      url: ${{ vars.STAGING_WEB_URL }}
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ inputs.release_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      SCHEMA_COMPATIBLE: ${{ inputs.schema_compatible }}
+      OPERATION: ${{ inputs.operation }}
+      API_DIGEST: ${{ inputs.api_digest }}
+      WEB_DIGEST: ${{ inputs.web_digest }}
+      STAGING_ENABLED: ${{ vars.STAGING_ENABLED }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_ACR_NAME: ${{ vars.AZURE_ACR_NAME }}
+      AZURE_API_APP: ${{ vars.AZURE_API_APP }}
+      AZURE_WEB_APP: ${{ vars.AZURE_WEB_APP }}
+      STAGING_API_URL: ${{ vars.STAGING_API_URL }}
+      STAGING_WEB_URL: ${{ vars.STAGING_WEB_URL }}
+      VITE_ENTRA_TENANT_ID: ${{ vars.VITE_ENTRA_TENANT_ID }}
+      VITE_ENTRA_CLIENT_ID: ${{ vars.VITE_ENTRA_CLIENT_ID }}
+      VITE_ENTRA_SCOPE: ${{ vars.VITE_ENTRA_SCOPE }}
+      AZURE_CORE_OUTPUT: none
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Recheck protection and actual independent approval before obtaining Azure credentials
+        run: python scripts/release_guard.py approved
+      - name: Reject incomplete environment configuration
+        run: python scripts/staging_release.py config
+      - name: Azure OIDC login (no stored client secret or publish profile)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Validate existing staging infrastructure and capture digest rollback pair
+        run: python scripts/staging_release.py snapshot
+      - name: Save recovery snapshot before any container change
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-before-${{ github.run_id }}-${{ github.run_attempt }}
+          path: staging-before.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Authenticate Docker to the existing registry using OIDC Azure session
+        run: az acr login --name "$AZURE_ACR_NAME" --only-show-errors
+      - name: Build verified source into immutable images or validate rollback pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          registry=$(python -c 'import json; print(json.load(open("staging-before.json"))["registry"])')
+          if [[ "$OPERATION" == "deploy" ]]; then
+            git worktree add --detach "$RUNNER_TEMP/release-source" "$RELEASE_SHA"
+            tag="${RELEASE_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            docker build --platform linux/amd64 --label "org.opencontainers.image.revision=$RELEASE_SHA" -t "$registry/assessflow-api:$tag" "$RUNNER_TEMP/release-source/backend"
+            docker build --platform linux/amd64 --label "org.opencontainers.image.revision=$RELEASE_SHA" \
+              --build-arg "VITE_API_URL=$STAGING_API_URL" \
+              --build-arg "VITE_ENTRA_TENANT_ID=$VITE_ENTRA_TENANT_ID" \
+              --build-arg "VITE_ENTRA_CLIENT_ID=$VITE_ENTRA_CLIENT_ID" \
+              --build-arg "VITE_ENTRA_SCOPE=$VITE_ENTRA_SCOPE" \
+              -t "$registry/assessflow-web:$tag" "$RUNNER_TEMP/release-source/frontend"
+            for component in api web; do
+              docker push "$registry/assessflow-$component:$tag"
+              digest=$(az acr repository show --name "$AZURE_ACR_NAME" --image "assessflow-$component:$tag" --query digest --output tsv)
+              [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+              az acr repository update --name "$AZURE_ACR_NAME" --image "assessflow-$component:$tag" --write-enabled false --delete-enabled false --output none
+              az acr repository update --name "$AZURE_ACR_NAME" --image "assessflow-$component@$digest" --write-enabled false --delete-enabled false --output none
+              echo "${component^^}_IMAGE=$registry/assessflow-$component@$digest" >> "$GITHUB_ENV"
+            done
+          elif [[ "$OPERATION" == "rollback" ]]; then
+            [[ "$API_DIGEST" =~ ^sha256:[a-f0-9]{64}$ && "$WEB_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+            for component in api web; do
+              digest_var="${component^^}_DIGEST"
+              image="$registry/assessflow-$component@${!digest_var}"
+              docker pull "$image"
+              revision=$(docker image inspect "$image" --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}')
+              [[ "$revision" == "$RELEASE_SHA" ]]
+              echo "${component^^}_IMAGE=$image" >> "$GITHUB_ENV"
+            done
+          else
+            exit 1
+          fi
+      - name: Promote digest pair to existing apps (no infrastructure provisioning or migrations)
+        env:
+          APPROVED_STAGING_JOB: 'true'
+        run: python scripts/staging_release.py deploy
+      - name: Verify basic deployed staging behaviour
+        run: python scripts/staging_release.py smoke
+      - name: Preserve release and rollback evidence, including partial failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            staging-before.json
+            staging-release.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Release outcome
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+        run: |
+          {
+            echo "## Azure staging release: $RESULT"
+            echo "Operation: $OPERATION; source: $RELEASE_SHA"
+            echo "Restore both previous digests from the staging-before artifact through a new independently approved rollback dispatch if this run failed."
+            echo "No database migrations or live AI/Graph/Copilot tests were executed by this workflow."
+          } >> "$GITHUB_STEP_SUMMARY"

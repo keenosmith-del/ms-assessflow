@@ -1,5 +1,7 @@
 # AssessFlow
 
+[![Verify AssessFlow](https://github.com/keenosmith-del/ms-assessflow/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/keenosmith-del/ms-assessflow/actions/workflows/verify.yml)
+
 A working enterprise IT service desk and access governance application. Employees submit
 application access requests; policy evidence informs a structured advisory assessment; an
 authorised human approves or rejects; service operators record verified manual fulfilment.
@@ -16,6 +18,26 @@ or live verified. See [handover](docs/HANDOVER.md), [test results](docs/testing/
 
 Canonical checkout: `/Users/keenosmith/Programming/Projects/ms-assesflow` (historical spelling).
 Remote/project name is `ms-assessflow`. Only the existing repository was used.
+
+## CI/CD and portfolio evidence
+
+**GitHub Actions CI is live and verified. Azure staging deployment automation is prepared and
+has not been executed. Microsoft cloud services still await authorised activation.** The badge
+above reports the real `verify.yml` status on main; it is not a deployment or AI service badge.
+
+- **PostgreSQL integration tests:** a real PostgreSQL 17 CI service, migration round-trip,
+  persisted workflow checks and concurrent approval/idempotency tests.
+- **Playwright:** real browser request → approval → fulfilment, navigation and mobile checks.
+- **Docker:** separate API/web images, pinned runtime dependencies, Compose and CI builds.
+- **Security checks:** JWT/RBAC/replay/privacy tests, bounded inputs, contract validation,
+  accidental-secret scan and frontend dependency audit.
+- **Separate CI/CD architecture:** push/PR verification → manual exact-SHA release → protected
+  GitHub Environment and independent approval → Azure OIDC → immutable image digests →
+  existing staging apps → smoke tests and rollback evidence. No automatic Azure provisioning.
+
+Read the [engineering evidence](docs/portfolio/engineering.md) and
+[staging release/rollback runbook](docs/deployment/staging-workflow.md) for configuration,
+permissions, approval gates and the explicit limits of local verification.
 
 ## Start locally
 
@@ -103,7 +125,7 @@ copilot/            Employee agent source assets, connector and approval flow sp
 infra/              Compilable Azure Bicep staging foundation; nothing provisioned
 scripts/            Contract generation/validation, runtime lock and limited secret checks
 docs/               Product, architecture, decisions, security, tests, operations and iterations
-.github/workflows/  CI verification, no automatic production deployment
+.github/workflows/  CI verification plus separate manually approved staging release automation
 ```
 
 Known engineering limits and exact remaining Azure/Copilot actions are in the

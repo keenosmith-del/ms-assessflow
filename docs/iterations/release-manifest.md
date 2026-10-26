@@ -26,3 +26,21 @@ backend container runs as unprivileged assessflow user. Temporary smoke containe
 
 No Azure resources, real tenant flows or agent channels were deployed. Remaining configuration,
 permissions, licence and live-verification work is in ../HANDOVER.md.
+
+## Iteration 008 — staging release engineering
+
+Implementation: `iteration-008: add manually approved Azure staging release automation`
+(exact commit recorded after commit). Added independent GitHub Environment approval/OIDC,
+exact-SHA green-CI gate, locked digest images, existing-target validation, smoke/rollback
+contracts, actual CI badge and portfolio-facing CI/CD evidence. No deployment was dispatched
+and no GitHub environment or Azure resource was activated.
+
+Local verification: 33 release safety tests; 65 PostgreSQL backend tests; SQLite 64 passed/1
+skipped; 6 frontend tests; 3 Playwright workflows; Ruff/ESLint/build, actionlint 1.7.12, Bicep
+compile, contract validation and limited secret checks passed. Full evidence and limitations:
+[Iteration 008](iteration-008.md), [staging runbook](../deployment/staging-workflow.md).
+
+Pre-change current CI verified green at 7fa651f:
+https://github.com/keenosmith-del/ms-assessflow/actions/runs/40307827111
+Iteration 008 hosted CI status is recorded after the pushed run completes; this entry does not
+claim a deployment run or unconfigured cloud provider was verified.

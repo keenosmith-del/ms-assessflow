@@ -106,6 +106,7 @@ resource api 'Microsoft.Web/sites@2023-12-01' = {
 }
 resource web 'Microsoft.Web/sites@2023-12-01' = {
   name: webName
+  tags: { application: 'AssessFlow', environment: environment }
   location: location
   kind: 'app,linux,container'
   identity: { type: 'SystemAssigned' }

@@ -31,6 +31,7 @@ jobs:
         working-directory: backend
       - run: pytest -q
         working-directory: backend
+      - run: pytest -q tests/release
       - run: python scripts/export_contracts.py && git diff --exit-code docs/api/openapi.json copilot/tools/connector.swagger.json
       - run: python scripts/check_secrets.py && python scripts/validate_contracts.py
       - run: az bicep build --file infra/main.bicep --outfile /tmp/assessflow.json

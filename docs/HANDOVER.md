@@ -91,3 +91,10 @@ accessibility/load targets. No real organisational communications or directory w
 Local startup commands are copied in the repository README and deployment/runbook.md. Cost
 controls, rollback, backup and cleanup procedures are in deployment/runbook.md and
 operations/operations.md. Keep local synthetic data separate from any future real tenant data.
+
+## Iteration 008 release-engineering update
+A separate manually dispatched staging workflow now prepares GitHub Environment approval,
+OIDC, exact-SHA CI verification, locked image digests, existing-resource validation, smoke checks
+and reviewed rollback. It has not been dispatched; no Azure environment or credential was
+configured. The README badge reports actual CI only. See iterations/iteration-008.md and
+deployment/staging-workflow.md for measured checks, activation prerequisites and limits.
