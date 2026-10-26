@@ -11,6 +11,7 @@ Completed implementation iterations (all pushed to existing origin):
 | `8cea2634279889389ada1611b3648b14bb71bb0e` | iteration-005: harden Microsoft provider contracts and offline evaluations |
 | `c579c12301bd681d3de63bee313095b1d585ff79` | iteration-006: prepare Microsoft solution assets and deployment tooling |
 | `2b93b5f81283d0bc6fa1af4478910ce7525b1fde` | iteration-007: complete local release verification and engineering handover |
+| `e1bea3ea845737635ea73d83faaa99f8fa2cee8c` | iteration-008: add manually approved Azure staging release automation |
 
 Final review implementation commit: `2b93b5f81283d0bc6fa1af4478910ce7525b1fde`. This manifest is a verification
 record, not a claim that unconfigured Microsoft services were deployed.
@@ -29,8 +30,8 @@ permissions, licence and live-verification work is in ../HANDOVER.md.
 
 ## Iteration 008 — staging release engineering
 
-Implementation: `iteration-008: add manually approved Azure staging release automation`
-(exact commit recorded after commit). Added independent GitHub Environment approval/OIDC,
+Implementation commit: `e1bea3ea845737635ea73d83faaa99f8fa2cee8c`
+(`iteration-008: add manually approved Azure staging release automation`). Added independent GitHub Environment approval/OIDC,
 exact-SHA green-CI gate, locked digest images, existing-target validation, smoke/rollback
 contracts, actual CI badge and portfolio-facing CI/CD evidence. No deployment was dispatched
 and no GitHub environment or Azure resource was activated.
@@ -42,5 +43,8 @@ compile, contract validation and limited secret checks passed. Full evidence and
 
 Pre-change current CI verified green at 7fa651f:
 https://github.com/keenosmith-del/ms-assessflow/actions/runs/40307827111
-Iteration 008 hosted CI status is recorded after the pushed run completes; this entry does not
-claim a deployment run or unconfigured cloud provider was verified.
+Iteration 008 hosted CI **passed all four jobs** at `e1bea3ea845737635ea73d83faaa99f8fa2cee8c`:
+https://github.com/keenosmith-del/ms-assessflow/actions/runs/40310628897
+The follow-up documentation commit records this evidence without changing executable source.
+The manual staging workflow has zero runs; no deployment or unconfigured cloud provider is
+claimed verified.

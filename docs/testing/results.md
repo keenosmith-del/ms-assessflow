@@ -47,3 +47,13 @@ provisioning, Application Insights. Adapter mocks and local RSA tests do not est
 provider connectivity. No cloud model groundedness, production capacity, penetration test or
 certified accessibility score is claimed. Current official references and installed SDK versions
 are recorded in docs/decisions/003-microsoft-contracts.md.
+
+## Iteration 008 release engineering
+
+33 release-safety tests passed with synthetic GitHub/Azure responses. Existing PostgreSQL suite:
+65 passed; SQLite: 64 passed/1 skipped; frontend: 6 passed; Playwright: 3 passed. Ruff, ESLint,
+Vite build, actionlint 1.7.12, Bicep compile, API/connector validation and limited secret scan passed.
+All four hosted verify.yml jobs passed for `e1bea3ea845737635ea73d83faaa99f8fa2cee8c`:
+https://github.com/keenosmith-del/ms-assessflow/actions/runs/40310628897
+No manual staging run, OIDC login, image publication, Azure resource validation/promotion,
+staging smoke or rollback was executed. See ../iterations/iteration-008.md for the exact boundary.

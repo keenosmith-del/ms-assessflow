@@ -54,8 +54,11 @@ created or configured. Do not dispatch the staging workflow merely to test missi
 - Official actionlint **1.7.12** (download checksum verified), both workflow files: **passed**.
 - Bicep compiler on `infra/main.bicep`: **passed**, no Azure authentication/provisioning.
 - API/connector contract validators and limited tracked-file accidental-secret scan: **passed**.
-- The pushed Iteration 008 CI result is recorded in the release manifest after completion;
-  no unexecuted hosted job is counted as passed here.
+- Pushed Iteration 008 `verify.yml` at `e1bea3ea845737635ea73d83faaa99f8fa2cee8c`: **success**,
+  all four hosted jobs (backend, frontend, containers, browser), including the 33 release tests.
+  https://github.com/keenosmith-del/ms-assessflow/actions/runs/40310628897
+- Read-only `gh run list --workflow deploy-staging.yml` returned **zero runs**; the manual
+  deployment workflow was not dispatched.
 
 ## Not executed / external prerequisites
 No staging workflow dispatch, Azure login, OIDC token exchange, ACR publish/lock, authenticated
@@ -70,6 +73,6 @@ model quality, employee authentication, Copilot publishing or every worker's run
 Container updates are sequential; partial failure requires reviewed recovery of the prior pair.
 
 ## Git record and outstanding work
-Implementation commit: recorded in `release-manifest.md` after commit. All requested local
+Implementation commit: `e1bea3ea845737635ea73d83faaa99f8fa2cee8c`. All requested local
 Iteration 008 work is complete; only environment activation and live staging execution remain
 externally gated. No application functionality was rebuilt; no interface redesign or unrelated technology introduced.
