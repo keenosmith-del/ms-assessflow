@@ -9,31 +9,31 @@
       "case": "valid-low-risk",
       "passed": true,
       "checks": 6,
-      "latency_ms": 37
+      "latency_ms": 36
     },
     {
       "case": "missing-justification",
       "passed": true,
       "checks": 5,
-      "latency_ms": 15
+      "latency_ms": 16
     },
     {
       "case": "incorrect-entitlement",
       "passed": true,
       "checks": 1,
-      "latency_ms": 5
+      "latency_ms": 6
     },
     {
       "case": "conflicting-policy",
       "passed": true,
       "checks": 5,
-      "latency_ms": 15
+      "latency_ms": 16
     },
     {
       "case": "expired-policy",
       "passed": true,
       "checks": 5,
-      "latency_ms": 15
+      "latency_ms": 16
     },
     {
       "case": "unavailable-policy",
@@ -45,7 +45,7 @@
       "case": "ambiguous-request",
       "passed": true,
       "checks": 5,
-      "latency_ms": 16
+      "latency_ms": 15
     },
     {
       "case": "unauthorised-requester",
@@ -57,25 +57,25 @@
       "case": "sensitive-information",
       "passed": true,
       "checks": 6,
-      "latency_ms": 16
+      "latency_ms": 69
     },
     {
       "case": "prompt-injection",
       "passed": true,
       "checks": 5,
-      "latency_ms": 17
+      "latency_ms": 15
     },
     {
       "case": "unsupported-request",
       "passed": true,
       "checks": 1,
-      "latency_ms": 5
+      "latency_ms": 6
     },
     {
       "case": "duplicate-request",
       "passed": true,
       "checks": 7,
-      "latency_ms": 62
+      "latency_ms": 21
     },
     {
       "case": "department-exception",

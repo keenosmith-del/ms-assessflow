@@ -35,6 +35,6 @@ Backup local PostgreSQL with `docker compose exec -T db pg_dump -U assessflow -F
 /path/to/secure-backup.dump` (choose an approved protected path). Restore into a separate empty
 DB with pg_restore and validate counts, decisions, policy digests and audit ordering before
 switching connections. Azure PostgreSQL point-in-time recovery retention in the foundation is
-seven days; test restoration and choose retention/RPO/RTO with the business. No restore drill
+seven days; test restoration and choose retention/RPO/RTO with the business. A local synthetic backup/restore drill passed with matching request/decision/audit counts; no restore drill
 against a live cloud backup has occurred. Archive/export retention and WORM audit storage are
 organisation-specific enhancements still requiring decisions.

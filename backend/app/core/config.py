@@ -1,13 +1,14 @@
 from functools import lru_cache
+from typing import Literal
 import os
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", hide_input_in_errors=True)
     assessflow_mode: str = "demo"
-    assessflow_env: str = "development"
+    assessflow_env: Literal["development", "test", "staging", "production"] = "development"
     database_url: str = "sqlite:///./assessflow.db"
     cors_origins: str = "http://localhost:5173"
     entra_tenant_id: str = ""

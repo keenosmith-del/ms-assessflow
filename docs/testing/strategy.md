@@ -14,8 +14,9 @@ npm run build
 npm run test:e2e
 ```
 
-For PostgreSQL, start `docker compose up -d db` then set
-TEST_DATABASE_URL=postgresql+psycopg://assessflow:local-only@localhost:55432/assessflow for pytest.
+For PostgreSQL, start `docker compose up -d db`, create a disposable database with
+`docker compose exec -T db createdb -U assessflow assessflow_test`, then set
+TEST_DATABASE_URL=postgresql+psycopg://assessflow:local-only@localhost:55432/assessflow_test for pytest.
 THIS DATABASE IS DESTRUCTIVE TEST STORAGE: fixtures drop and recreate mapped tables. Never
 point TEST_DATABASE_URL at a real operational database. The isolated evaluation runner uses
 SQLite deliberately and never calls Azure, including during the PostgreSQL suite.
@@ -26,7 +27,7 @@ installed Chrome; CI installs Chromium. E2E_URL overrides base URL. Run with syn
 data. Requests are real persisted fixtures created through the browser. Screenshots in this
 folder are captured from real pages; mobile checks enforce no document-level horizontal overflow.
 
-Offline evaluation dataset: backend/tests/evaluations/cases.json. Critical criteria: no automatic
+Offline evaluation dataset: backend/app/agents/evaluation_cases.json. Critical criteria: no automatic
 fulfilment, no unauthorised requester, missing evidence/expired/conflict/injection routes to
 manual review, valid evidence citation present, missing fields preserve state, duplicate keys
 preserve ID. Report is offline-evaluation.json. This measures deterministic contracts and

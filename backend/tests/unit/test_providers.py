@@ -189,3 +189,39 @@ def test_provider_failure_rolls_back_request(client, monkeypatch):
     assert create(client).status_code == 503
     with client.factory() as db:
         assert db.scalar(select(AccessRequest)) is None
+
+
+def test_large_policy_text_is_segmented_for_language_limits(azure, monkeypatch):
+    client = MagicMock()
+    client.recognize_pii_entities.return_value = [
+        SimpleNamespace(is_error=False, redacted_text="x" * 4000, entities=[]),
+        SimpleNamespace(is_error=False, redacted_text="x" * 2000, entities=[]),
+    ]
+    context_client(monkeypatch, "TextAnalyticsClient", client)
+    result = p.PrivacyProvider().redact("x" * 6000)
+    assert len(result.text) == 6000
+    assert [len(x) for x in client.recognize_pii_entities.call_args.args[0]] == [4000, 2000]
+
+
+def test_workflow_start_sends_signed_idempotent_contract(monkeypatch):
+    import hashlib
+    import hmac
+    from app.integrations.microsoft import automation
+
+    monkeypatch.setattr(settings(), "workflow_start_url", "https://synthetic.example.test/start")
+    monkeypatch.setattr(settings(), "workflow_callback_secret", "synthetic-signing-secret")
+
+    def send(_self, url, content, headers):
+        expected = hmac.new(
+            settings().workflow_callback_secret.encode(),
+            headers["X-Workflow-Timestamp"].encode() + b"." + content,
+            hashlib.sha256,
+        ).hexdigest()
+        assert headers["X-Workflow-Signature"] == expected
+        assert headers["Idempotency-Key"] == "request-uuid"
+        return httpx.Response(
+            200, json={"execution_id": "synthetic-execution"}, request=httpx.Request("POST", url)
+        )
+
+    monkeypatch.setattr(automation.httpx.Client, "post", send)
+    assert AutomationProvider().start("request-uuid", "manager-oid") == "synthetic-execution"

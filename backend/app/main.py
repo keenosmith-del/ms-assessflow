@@ -52,8 +52,8 @@ async def observability(request: Request, call_next):
         queue = windows[host]
         while queue and queue[0] < current - 60:
             queue.popleft()
-        limited = len(queue) >= 120
-        if not limited:
+        limited = len(queue) >= 120 and request.method != "OPTIONS"
+        if not limited and request.method != "OPTIONS":
             queue.append(current)
         if len(windows) > 10000:
             for key in list(windows):

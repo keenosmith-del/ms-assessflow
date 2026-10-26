@@ -12,4 +12,4 @@ Ruff checks/format passed. Final runtime-image rebuild and full regression recor
 Results: source package and operator instructions prepared. Five earlier iteration hashes recorded.
 Limitations: actual cloud setup, solution import/export, flow signer mapping and publishing unverified.
 Outstanding: final regression, container runtime smoke, remote CI observation and handover.
-Git commit hash: recorded in final release manifest after this implementation commit.
+Git commit hash: `c579c12301bd681d3de63bee313095b1d585ff79`.

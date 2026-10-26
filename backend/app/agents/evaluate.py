@@ -16,7 +16,7 @@ from app.models.entities import PolicyVersion
 from app.services.policies import retrieve as real_retrieve
 from unittest.mock import patch
 
-DATASET = Path(__file__).resolve().parents[2] / "tests/evaluations/cases.json"
+DATASET = Path(__file__).with_name("evaluation_cases.json")
 
 
 def run_case(case):

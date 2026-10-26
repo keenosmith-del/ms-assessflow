@@ -21,7 +21,7 @@ test("employee request, manager approval, service fulfilment, persisted audit", 
   ).not.toBeVisible();
   await page.locator("tbody .request-title").first().click();
   await expect(
-    page.getByText("Pending Approval", { exact: true }),
+    page.getByText("Pending Approval", { exact: true }).first(),
   ).toBeVisible();
   const requestURL = page.url();
   await choose(page, "Morgan Taylor");

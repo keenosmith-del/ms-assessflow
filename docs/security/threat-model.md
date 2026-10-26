@@ -43,3 +43,7 @@ edge deployment requirement; development server is HTTP. Provider calls inside t
 limit concurrency. Shared-secret callbacks depend on secure signer/responder mapping and key
 rotation. Conditional access, retention, DLP, tenant consent and penetration testing need the
 organisation's security owner. No production security certification is claimed.
+
+Browser CORS preflight OPTIONS requests are exempt from the local per-IP limiter; actual
+application requests remain limited. Repeated full browser suites share a process/IP budget;
+restart only AssessFlow's dedicated test server between runs when necessary.
