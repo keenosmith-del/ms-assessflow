@@ -1,0 +1,484 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "AssessFlow Employee Tools",
+    "version": "1.0.0"
+  },
+  "host": "REPLACE_WITH_API_HOST",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "entraOAuth": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "https://login.microsoftonline.com/REPLACE_TENANT/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/REPLACE_TENANT/oauth2/v2.0/token",
+      "scopes": {
+        "Requests.Create": "Submit and clarify own access requests",
+        "Requests.Read": "Read permitted request status",
+        "Policies.Read": "Search permitted policy evidence"
+      }
+    }
+  },
+  "paths": {
+    "/v1/tools/requests": {
+      "post": {
+        "operationId": "CreateAccessRequest",
+        "summary": "Create Tool",
+        "description": "Delegated employee tool; the backend enforces identity and ownership.",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 100
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Persisted tool result",
+            "schema": {
+              "$ref": "#/definitions/ToolRequestResult"
+            }
+          }
+        },
+        "security": [
+          {
+            "entraOAuth": [
+              "Requests.Create"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/tools/requests/{request_id}": {
+      "get": {
+        "operationId": "GetRequestStatus",
+        "summary": "Status Tool",
+        "description": "Delegated employee tool; the backend enforces identity and ownership.",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persisted tool result",
+            "schema": {
+              "$ref": "#/definitions/ToolStatusResult"
+            }
+          }
+        },
+        "security": [
+          {
+            "entraOAuth": [
+              "Requests.Read"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/tools/requests/{request_id}/information": {
+      "patch": {
+        "operationId": "SupplyRequestInformation",
+        "summary": "Information Tool",
+        "description": "Delegated employee tool; the backend enforces identity and ownership.",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Clarification"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persisted tool result",
+            "schema": {
+              "$ref": "#/definitions/ToolRequestResult"
+            }
+          }
+        },
+        "security": [
+          {
+            "entraOAuth": [
+              "Requests.Create"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/tools/policies/search": {
+      "get": {
+        "operationId": "SearchPermittedPolicies",
+        "summary": "Search Tool",
+        "description": "Delegated employee tool; the backend enforces identity and ownership.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "default": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persisted tool result",
+            "schema": {
+              "$ref": "#/definitions/ToolSearchResult"
+            }
+          }
+        },
+        "security": [
+          {
+            "entraOAuth": [
+              "Policies.Read"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Clarification": {
+      "properties": {
+        "justification": {
+          "type": "string",
+          "maxLength": 4000,
+          "minLength": 20,
+          "title": "Justification"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "justification"
+      ],
+      "title": "Clarification"
+    },
+    "CommentInput": {
+      "properties": {
+        "body": {
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Body"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "body"
+      ],
+      "title": "CommentInput"
+    },
+    "DecisionInput": {
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approved",
+            "rejected"
+          ],
+          "title": "Decision"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "minLength": 10,
+          "title": "Reason"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "decision",
+        "reason"
+      ],
+      "title": "DecisionInput"
+    },
+    "FulfilInput": {
+      "properties": {
+        "reference": {
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 5,
+          "title": "Reference"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "reference"
+      ],
+      "title": "FulfilInput"
+    },
+    "HTTPValidationError": {
+      "properties": {
+        "detail": {
+          "items": {
+            "$ref": "#/definitions/ValidationError"
+          },
+          "type": "array",
+          "title": "Detail"
+        }
+      },
+      "type": "object",
+      "title": "HTTPValidationError"
+    },
+    "PolicyEvidence": {
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "title": "Policy Id"
+        },
+        "version_id": {
+          "type": "string",
+          "title": "Version Id"
+        },
+        "chunk_index": {
+          "type": "integer",
+          "title": "Chunk Index"
+        },
+        "quote": {
+          "type": "string",
+          "title": "Quote"
+        },
+        "title": {
+          "type": "string",
+          "title": "Title"
+        },
+        "version": {
+          "type": "integer",
+          "title": "Version"
+        },
+        "expired": {
+          "type": "boolean",
+          "title": "Expired"
+        },
+        "digest": {
+          "type": "string",
+          "title": "Digest"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "policy_id",
+        "version_id",
+        "chunk_index",
+        "quote",
+        "title",
+        "version",
+        "expired",
+        "digest"
+      ],
+      "title": "PolicyEvidence"
+    },
+    "PolicyInput": {
+      "properties": {
+        "application_id": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Application Id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 180,
+          "minLength": 5,
+          "title": "Title"
+        },
+        "department": {
+          "type": "string",
+          "enum": [
+            "all",
+            "finance",
+            "it",
+            "sales"
+          ],
+          "title": "Department"
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 100000,
+          "minLength": 40,
+          "title": "Content"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date",
+          "title": "Expires At"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "application_id",
+        "title",
+        "department",
+        "content",
+        "expires_at"
+      ],
+      "title": "PolicyInput"
+    },
+    "RequestInput": {
+      "properties": {
+        "application_id": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Application Id"
+        },
+        "access_level": {
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 1,
+          "title": "Access Level"
+        },
+        "justification": {
+          "type": "string",
+          "maxLength": 4000,
+          "title": "Justification",
+          "default": ""
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "application_id",
+        "access_level"
+      ],
+      "title": "RequestInput"
+    },
+    "ToolRequestResult": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "status"
+      ],
+      "title": "ToolRequestResult"
+    },
+    "ToolSearchResult": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/definitions/PolicyEvidence"
+          },
+          "type": "array",
+          "title": "Items"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "items"
+      ],
+      "title": "ToolSearchResult"
+    },
+    "ToolStatusResult": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status"
+        },
+        "next_step": {
+          "type": "string",
+          "title": "Next Step"
+        },
+        "missing_fields": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Missing Fields"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "id",
+        "status",
+        "next_step",
+        "missing_fields"
+      ],
+      "title": "ToolStatusResult"
+    },
+    "ValidationError": {
+      "properties": {
+        "loc": {
+          "items": {},
+          "type": "array",
+          "title": "Location"
+        },
+        "msg": {
+          "type": "string",
+          "title": "Message"
+        },
+        "type": {
+          "type": "string",
+          "title": "Error Type"
+        },
+        "input": {
+          "title": "Input"
+        },
+        "ctx": {
+          "type": "object",
+          "title": "Context"
+        }
+      },
+      "type": "object",
+      "required": [
+        "loc",
+        "msg",
+        "type"
+      ],
+      "title": "ValidationError"
+    }
+  }
+}

@@ -6,4 +6,4 @@ Decision: retain existing Git root; no remote changes or provisioning.
 Checks executed: repository status and tool inventory; existing Git history inspected.
 Results: clean initial repository; Python 3.12 and Node 24 available; Docker daemon unavailable.
 Limitations: no database service or tenant configured. Outstanding: implementation and verification.
-Commit: see `git log --grep='iteration-001'` (hash recorded in later release manifest).
+Git commit hash: `d1d1679` (implementation stage; this record receives later verification updates).

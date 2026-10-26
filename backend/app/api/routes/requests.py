@@ -12,6 +12,8 @@ from app.models.entities import (
     Comment,
     Decision,
     Fulfilment,
+    PolicyVersion,
+    Policy,
 )
 from app.schemas.contracts import (
     RequestInput,
@@ -137,7 +139,30 @@ def detail(request_id: str, db: DB, user: Actor) -> dict:
         .where(Assessment.request_id == item.id)
         .order_by(Assessment.created_at.desc())
     ).all()
-    output["assessments"] = [x.result for x in assessments]
+    from copy import deepcopy
+    from app.services.policies import permitted
+
+    visible_assessments = []
+    for record in assessments:
+        result = deepcopy(record.result)
+        inaccessible = False
+        for citation in result["output"]["citations"]:
+            version = db.get(PolicyVersion, citation["version_id"])
+            policy = db.get(Policy, version.policy_id) if version else None
+            if not policy or not permitted(user, policy):
+                inaccessible = True
+        if inaccessible:
+            result["output"]["citations"] = []
+            result["output"]["explanation"] = (
+                "Assessment details are restricted by policy visibility. Consult the assigned approver."
+            )
+            result["output"]["uncertainty"] = "Detailed evidence withheld for this identity."
+            result["eligibility"] = {
+                "eligible": False,
+                "failures": ["Policy evidence is restricted"],
+            }
+        visible_assessments.append(result)
+    output["assessments"] = visible_assessments
     output["timeline"] = [
         {
             "id": x.id,

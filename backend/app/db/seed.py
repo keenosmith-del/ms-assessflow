@@ -5,6 +5,10 @@ from app.models.entities import Department, Role, User, Application, Policy, Pol
 
 
 def seed(db):
+    from app.core.config import settings
+
+    if settings().assessflow_mode != "demo":
+        raise ValueError("Synthetic fixtures require explicit demo mode")
     if db.scalar(select(User.id).limit(1)):
         return
     db.add_all([Department(id=x, name=x.title()) for x in ["finance", "it", "sales"]])

@@ -4,7 +4,13 @@ from typing import Annotated
 from fastapi import APIRouter, Header, HTTPException, Request
 from app.api.routes.requests import DB, Actor, create_request, detail, clarify
 from app.services.policies import retrieve
-from app.schemas.contracts import RequestInput, Clarification
+from app.schemas.contracts import (
+    RequestInput,
+    Clarification,
+    ToolRequestResult,
+    ToolStatusResult,
+    ToolSearchResult,
+)
 from app.core.config import settings
 from app.security.auth import validate_token
 
@@ -25,7 +31,12 @@ def tool_scope(request, scope):
         raise HTTPException(403, "Connector client or tool scope is not permitted")
 
 
-@router.post("/requests", status_code=201, operation_id="CreateAccessRequest")
+@router.post(
+    "/requests",
+    status_code=201,
+    operation_id="CreateAccessRequest",
+    response_model=ToolRequestResult,
+)
 def create_tool(
     payload: RequestInput,
     request: Request,
@@ -38,7 +49,9 @@ def create_tool(
     return {"id": item["id"], "status": item["status"]}
 
 
-@router.get("/requests/{request_id}", operation_id="GetRequestStatus")
+@router.get(
+    "/requests/{request_id}", operation_id="GetRequestStatus", response_model=ToolStatusResult
+)
 def status_tool(request_id: str, request: Request, db: DB, user: Actor) -> dict:
     tool_scope(request, "Requests.Read")
     item = detail(request_id, db, user)
@@ -52,7 +65,11 @@ def status_tool(request_id: str, request: Request, db: DB, user: Actor) -> dict:
     }
 
 
-@router.patch("/requests/{request_id}/information", operation_id="SupplyRequestInformation")
+@router.patch(
+    "/requests/{request_id}/information",
+    operation_id="SupplyRequestInformation",
+    response_model=ToolRequestResult,
+)
 def information_tool(
     request_id: str, payload: Clarification, request: Request, db: DB, user: Actor
 ) -> dict:
@@ -61,7 +78,9 @@ def information_tool(
     return {"id": item["id"], "status": item["status"]}
 
 
-@router.get("/policies/search", operation_id="SearchPermittedPolicies")
+@router.get(
+    "/policies/search", operation_id="SearchPermittedPolicies", response_model=ToolSearchResult
+)
 def search_tool(request: Request, db: DB, user: Actor, q: str = "") -> dict:
     tool_scope(request, "Policies.Read")
     if len(q) > 500:

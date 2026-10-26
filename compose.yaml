@@ -1,0 +1,41 @@
+name: assessflow
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: assessflow
+      POSTGRES_USER: assessflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-only}
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - assessflow-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U assessflow']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build: ./backend
+    profiles: [app]
+    command: ["sh", "-c", "alembic upgrade head && python -m app.db.seed && uvicorn app.main:app --host 0.0.0.0 --port 5050 --no-access-log"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://assessflow:${POSTGRES_PASSWORD:-local-only}@db:5432/assessflow
+      ASSESSFLOW_MODE: demo
+      CORS_ORIGINS: http://localhost:5175
+    ports:
+      - '127.0.0.1:5050:5050'
+    depends_on:
+      db:
+        condition: service_healthy
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5050
+    profiles: [app]
+    ports:
+      - '127.0.0.1:5175:8080'
+    depends_on: [api]
+volumes:
+  assessflow-db:

@@ -1,0 +1,11 @@
+{
+ "name":"assessflow-policies",
+ "fields":[
+  {"name":"id","type":"Edm.String","key":true},
+  {"name":"version_id","type":"Edm.String","filterable":true},
+  {"name":"application_id","type":"Edm.String","filterable":true},
+  {"name":"department","type":"Edm.String","filterable":true},
+  {"name":"chunk_index","type":"Edm.Int32"},
+  {"name":"content","type":"Edm.String","searchable":true}
+ ]
+}

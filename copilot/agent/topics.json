@@ -1,0 +1,6 @@
+[
+ {"name":"Request application access","triggers":["I need application access","Request financial reports"],"required_inputs":["application_id","access_level","justification"],"tools":["CreateAccessRequest","GetRequestStatus","SupplyRequestInformation"],"confirmation":"Confirm submission before calling create"},
+ {"name":"Track my request","triggers":["Where is my request?"],"required_inputs":["request_id"],"tools":["GetRequestStatus"]},
+ {"name":"Explain policy","triggers":["What is the access policy?"],"required_inputs":["q"],"tools":["SearchPermittedPolicies"]},
+ {"name":"Unsupported or privileged action","triggers":["Grant access now","Approve my request"],"tools":[],"response":"Explain human approval and direct to the operational console"}
+]

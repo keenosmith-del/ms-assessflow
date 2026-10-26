@@ -9,4 +9,4 @@ Results: complete lifecycle, missing information, duplicate keys, cross-user acc
 policy ACL, injection flagging, privacy redaction, signed replay-safe callbacks verified offline.
 Limitations: cloud adapters present but not live verified; PostgreSQL concurrency still requires verification.
 Outstanding: UI, expanded provider/evaluation tests, Microsoft setup and deployment assets.
-Commit: see `git log --grep='iteration-003'`; hash included in release manifest.
+Git commit hash: `3a6c14d` (implementation stage; this record receives later verification updates).

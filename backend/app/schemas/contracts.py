@@ -58,3 +58,28 @@ class CallbackInput(StrictModel):
     actor_id: str
     decision: Literal["approved", "rejected"]
     reason: str = Field(min_length=10, max_length=2000)
+
+
+class ToolRequestResult(StrictModel):
+    id: str
+    status: str
+
+
+class ToolStatusResult(ToolRequestResult):
+    next_step: str
+    missing_fields: list[str]
+
+
+class PolicyEvidence(StrictModel):
+    policy_id: str
+    version_id: str
+    chunk_index: int
+    quote: str
+    title: str
+    version: int
+    expired: bool
+    digest: str
+
+
+class ToolSearchResult(StrictModel):
+    items: list[PolicyEvidence]

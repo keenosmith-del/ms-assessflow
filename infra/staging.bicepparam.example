@@ -1,0 +1,13 @@
+using './main.bicep'
+param prefix = 'afexample'
+param environment = 'staging'
+param apiImage = 'YOUR_REGISTRY/assessflow-api:IMMUTABLE_TAG'
+param webImage = 'YOUR_REGISTRY/assessflow-web:IMMUTABLE_TAG'
+param tenantId = 'REPLACE'
+param apiClientId = 'REPLACE'
+param apiAudience = 'REPLACE'
+param foundryProjectEndpoint = 'https://RESOURCE.services.ai.azure.com/api/projects/PROJECT'
+param modelDeployment = 'REPLACE'
+param languageEndpoint = 'https://RESOURCE.cognitiveservices.azure.com'
+param searchEndpoint = 'https://RESOURCE.search.windows.net'
+// Supply postgresPassword from an approved secret source; never save it here.

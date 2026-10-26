@@ -1,0 +1,10 @@
+{
+ "artifact_kind":"implementation specification, not a native flow export",
+ "start":{"method":"POST","body":{"request_id":"uuid","approver_id":"Entra object ID","idempotency_key":"request UUID"},"headers":["X-Workflow-Timestamp","X-Workflow-Signature","Idempotency-Key"],"response":{"execution_id":"flow run ID"}},
+ "callback":{"method":"POST","path":"/v1/workflows/callback","headers":["X-Workflow-Timestamp","X-Workflow-Signature"],"body":{"event_id":"unique flow event UUID","request_id":"request UUID","actor_id":"actual authenticated approval responder object ID","decision":"approved or rejected","reason":"at least 10 characters"}},
+ "signature":"hex HMAC-SHA256(shared_secret, unix_timestamp + '.' + exact_raw_body)",
+ "expiry":"300 second signature window; approval workflow expires after 3 days",
+ "replay":"same event and body returns already_processed; changed body with reused event ID is rejected",
+ "approval_control":"flow approval assigned only to approver_id; map actual responder identity, never caller-supplied display name",
+ "escalation":"scheduled authorised job invokes /v1/workflows/maintenance/expire; administrator reviews and renews expired requests"
+}

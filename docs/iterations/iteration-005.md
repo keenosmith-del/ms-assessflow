@@ -14,4 +14,4 @@ Results: simulated dataset 13/13; provider failure, forged evidence, expired app
 invalid issuer/audience/signature/scope and PII handling covered. No live model evaluation.
 Limitations: cloud services/tenant unavailable; native Power Platform solution creation pending.
 Outstanding: connector assets, full operating documentation, containers/CI/IaC and final review.
-Commit: see `git log --grep='iteration-005'`; release manifest records hash.
+Git commit hash: `8cea263` (implementation stage; this record receives later verification updates).

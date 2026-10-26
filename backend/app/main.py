@@ -33,6 +33,8 @@ app.add_middleware(
 )
 logger = logging.getLogger("assessflow")
 logging.basicConfig(level=logging.INFO)
+for noisy_logger in ["httpx", "httpx2", "azure"]:
+    logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 windows = defaultdict(deque)
 rate_lock = Lock()
 
@@ -155,6 +157,16 @@ async def internal_error(request, exc):
 @app.get("/health")
 def health() -> dict:
     return {"status": "alive", "mode": settings().assessflow_mode}
+
+
+@app.get("/ready")
+def ready():
+    from app.db.session import SessionLocal
+    from sqlalchemy import text
+
+    with SessionLocal() as db:
+        db.execute(text("SELECT 1"))
+    return {"status": "ready"}
 
 
 app.include_router(requests.router)

@@ -12,4 +12,4 @@ Results: all checks passed after fixing accessible table label positioning that 
 Dependency audit after build/test upgrades: zero reported vulnerabilities.
 Limitations: Entra sign-in requires tenant configuration; screenshots are real local demo captures.
 Outstanding: deeper provider tests, deployment and complete Microsoft handover.
-Commit: see `git log --grep='iteration-004'`; release manifest records hash.
+Git commit hash: `7edc5e4` (implementation stage; this record receives later verification updates).

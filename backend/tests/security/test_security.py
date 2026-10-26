@@ -168,3 +168,12 @@ def test_expired_workflow_requires_renewal(client):
         ).status_code
         == 200
     )
+
+
+def test_request_read_does_not_bypass_policy_acl(client):
+    rid = create(client).json()["id"]
+    requester = client.get(f"/v1/requests/{rid}", headers={"X-Demo-User": "employee"}).json()
+    assert requester["assessments"][0]["output"]["citations"]
+    operator = client.get(f"/v1/requests/{rid}", headers={"X-Demo-User": "operator"}).json()
+    assert operator["assessments"][0]["output"]["citations"] == []
+    assert "restricted" in operator["assessments"][0]["output"]["explanation"]
