@@ -1,0 +1,89 @@
+{
+  "kind": "offline-contract-and-simulation",
+  "live_model_invoked": false,
+  "semantic_groundedness": "not measured; exact citation validation is tested separately",
+  "token_usage": null,
+  "estimated_cost": null,
+  "results": [
+    {
+      "case": "valid-low-risk",
+      "passed": true,
+      "checks": 6,
+      "latency_ms": 37
+    },
+    {
+      "case": "missing-justification",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 15
+    },
+    {
+      "case": "incorrect-entitlement",
+      "passed": true,
+      "checks": 1,
+      "latency_ms": 5
+    },
+    {
+      "case": "conflicting-policy",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 15
+    },
+    {
+      "case": "expired-policy",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 15
+    },
+    {
+      "case": "unavailable-policy",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 15
+    },
+    {
+      "case": "ambiguous-request",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 16
+    },
+    {
+      "case": "unauthorised-requester",
+      "passed": true,
+      "checks": 1,
+      "latency_ms": 4
+    },
+    {
+      "case": "sensitive-information",
+      "passed": true,
+      "checks": 6,
+      "latency_ms": 16
+    },
+    {
+      "case": "prompt-injection",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 17
+    },
+    {
+      "case": "unsupported-request",
+      "passed": true,
+      "checks": 1,
+      "latency_ms": 5
+    },
+    {
+      "case": "duplicate-request",
+      "passed": true,
+      "checks": 7,
+      "latency_ms": 62
+    },
+    {
+      "case": "department-exception",
+      "passed": true,
+      "checks": 5,
+      "latency_ms": 14
+    }
+  ],
+  "passed": 13,
+  "total": 13
+}

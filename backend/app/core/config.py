@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     entra_tenant_id: str = ""
     entra_client_id: str = ""
+    entra_copilot_client_id: str = ""
     entra_audience: str = ""
     foundry_project_endpoint: str = ""
     azure_openai_deployment: str = ""

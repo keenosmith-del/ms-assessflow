@@ -23,7 +23,11 @@ def latest(db, policy_id):
 def retrieve(db, user, query="", application_id=None):
     if settings().assessflow_mode == "azure":
         # Filter Search results against canonical version and ACL again; stale index data is untrusted.
-        hits = SearchProvider().search(query or "access", user.department, application_id)
+        hits = SearchProvider().search(
+            query or "access",
+            "__admin__" if user.role == "admin" else user.department,
+            application_id,
+        )
         result = []
         for hit in hits:
             version = db.get(PolicyVersion, hit.get("version_id"))

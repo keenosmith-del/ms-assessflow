@@ -28,8 +28,10 @@ def analyse(db, user, item):
         "ignore previous" in x["quote"].lower() for x in evidence
     ):
         failures.append("Instruction-like content requires manual review")
+    usage = None
     if settings().assessflow_mode == "azure":
-        result = FoundryProvider().assess(
+        provider = FoundryProvider()
+        result = provider.assess(
             {
                 "application_id": item.application_id,
                 "access_level": item.access_level,
@@ -37,6 +39,7 @@ def analyse(db, user, item):
             },
             evidence,
         )
+        usage = provider.usage
         for citation in result.citations:
             if not any(
                 citation.version_id == x["version_id"]
@@ -71,4 +74,6 @@ def analyse(db, user, item):
         "trace_id": str(uuid4()),
         "latency_ms": round((perf_counter() - started) * 1000),
         "pii_provider": privacy.provider,
+        "model_usage": usage,
+        "estimated_cost": None,
     }

@@ -1,6 +1,6 @@
 import hashlib
 import json
-from datetime import timedelta
+from datetime import timedelta, timezone
 from fastapi import HTTPException
 from sqlalchemy import select
 from app.models.entities import (
@@ -129,6 +129,9 @@ def decide(db, user, item, payload, correlation):
         ):
             return item
         raise HTTPException(409, "A decision already exists")
+    workflow = db.get(Workflow, item.id)
+    if workflow and workflow.expires_at.replace(tzinfo=timezone.utc) < now():
+        raise HTTPException(409, "Approval workflow expired; administrator renewal required")
     transition(db, item, payload.decision, user.id, correlation)
     db.add(
         Decision(

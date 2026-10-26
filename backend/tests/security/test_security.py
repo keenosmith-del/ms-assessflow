@@ -127,3 +127,44 @@ def test_rate_limit(client):
         response = client.get("/health")
     assert response.status_code == 200
     assert client.get("/health").status_code == 429
+
+
+def test_actual_body_size_is_limited(client):
+    response = client.post(
+        "/v1/requests",
+        content=b"x" * 200001,
+        headers={
+            "Content-Type": "application/json",
+            "X-Demo-User": "employee",
+            "Idempotency-Key": "large-payload-key",
+        },
+    )
+    assert response.status_code == 413
+
+
+def test_expired_workflow_requires_renewal(client):
+    from datetime import timedelta
+    from app.models.entities import Workflow, now
+
+    rid = create(client).json()["id"]
+    with client.factory.begin() as db:
+        db.get(Workflow, rid).expires_at = now() - timedelta(days=1)
+    decision = {"decision": "approved", "reason": "Reviewed business requirement"}
+    assert (
+        client.post(
+            f"/v1/requests/{rid}/decision", json=decision, headers={"X-Demo-User": "manager"}
+        ).status_code
+        == 409
+    )
+    expired = client.post("/v1/workflows/maintenance/expire", headers={"X-Demo-User": "admin"})
+    assert rid in expired.json()["expired_request_ids"]
+    assert (
+        client.post(f"/v1/workflows/{rid}/renew", headers={"X-Demo-User": "admin"}).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            f"/v1/requests/{rid}/decision", json=decision, headers={"X-Demo-User": "manager"}
+        ).status_code
+        == 200
+    )

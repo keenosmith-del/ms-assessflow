@@ -341,3 +341,70 @@ async def callback(request: Request, db: DB) -> dict:
         request.state.correlation_id,
     )
     return {"status": "recorded", "request_status": item.status}
+
+
+@router.post("/workflows/{request_id}/start")
+def start_workflow(request_id: str, request: Request, db: DB, user: Actor) -> dict:
+    from app.integrations.microsoft.automation import AutomationProvider
+
+    require_role(user, "admin")
+    item = owned_request(db, user, request_id, lock=True)
+    workflow = db.get(Workflow, item.id)
+    if item.status != "pending_approval" or not workflow:
+        raise HTTPException(409, "Pending approval workflow required")
+    if workflow.external_id:
+        return {"status": workflow.status, "execution_id": workflow.external_id}
+    owner = db.get(User, item.requester_id)
+    if not owner.manager_id:
+        raise HTTPException(409, "Assigned manager required")
+    external_id = AutomationProvider().start(item.id, owner.manager_id)
+    workflow.external_id = external_id
+    workflow.status = "external_pending"
+    audit(
+        db,
+        user.id,
+        "workflow_started",
+        item.id,
+        {"execution_id": external_id},
+        request.state.correlation_id,
+    )
+    return {"status": workflow.status, "execution_id": external_id}
+
+
+@router.post("/workflows/maintenance/expire")
+def expire_workflows(request: Request, db: DB, user: Actor) -> dict:
+    require_role(user, "admin")
+    expired = []
+    for workflow in db.scalars(
+        select(Workflow)
+        .where(Workflow.status.in_(["local_pending", "external_pending"]))
+        .with_for_update()
+    ):
+        if workflow.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+            workflow.status = "expired_escalation_required"
+            expired.append(workflow.request_id)
+            audit(
+                db,
+                user.id,
+                "workflow_expired",
+                workflow.request_id,
+                {"next_step": "administrator review and renewal required"},
+                request.state.correlation_id,
+            )
+    return {"expired_request_ids": expired}
+
+
+@router.post("/workflows/{request_id}/renew")
+def renew_workflow(request_id: str, request: Request, db: DB, user: Actor) -> dict:
+    from datetime import timedelta
+
+    require_role(user, "admin")
+    item = owned_request(db, user, request_id, lock=True)
+    workflow = db.get(Workflow, item.id)
+    if item.status != "pending_approval" or not workflow:
+        raise HTTPException(409, "Pending approval required")
+    workflow.expires_at = datetime.now(timezone.utc) + timedelta(days=3)
+    workflow.status = "local_pending"
+    workflow.external_id = None
+    audit(db, user.id, "workflow_renewed", item.id, correlation=request.state.correlation_id)
+    return {"status": workflow.status, "expires_at": workflow.expires_at.isoformat()}

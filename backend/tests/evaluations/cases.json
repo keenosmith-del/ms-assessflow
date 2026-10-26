@@ -1,0 +1,70 @@
+[
+  {
+    "id": "valid-low-risk",
+    "recommendation": "approve",
+    "citation": true
+  },
+  {
+    "id": "missing-justification",
+    "justification": "",
+    "status": "awaiting_information",
+    "recommendation": "manual_review"
+  },
+  {
+    "id": "incorrect-entitlement",
+    "access_level": "administrator",
+    "code": 422
+  },
+  {
+    "id": "conflicting-policy",
+    "mutation": "conflicting",
+    "recommendation": "manual_review"
+  },
+  {
+    "id": "expired-policy",
+    "mutation": "expired",
+    "recommendation": "manual_review"
+  },
+  {
+    "id": "unavailable-policy",
+    "mutation": "unavailable",
+    "recommendation": "manual_review"
+  },
+  {
+    "id": "ambiguous-request",
+    "justification": "Need it",
+    "status": "awaiting_information",
+    "recommendation": "manual_review"
+  },
+  {
+    "id": "unauthorised-requester",
+    "user": "not-onboarded",
+    "code": 403
+  },
+  {
+    "id": "sensitive-information",
+    "justification": "Finance reporting contact synthetic@example.test",
+    "recommendation": "approve",
+    "redacted": true
+  },
+  {
+    "id": "prompt-injection",
+    "mutation": "injection",
+    "recommendation": "manual_review"
+  },
+  {
+    "id": "unsupported-request",
+    "application_id": "unknown",
+    "code": 422
+  },
+  {
+    "id": "duplicate-request",
+    "duplicate": true,
+    "recommendation": "approve"
+  },
+  {
+    "id": "department-exception",
+    "user": "other",
+    "recommendation": "manual_review"
+  }
+]

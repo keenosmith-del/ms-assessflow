@@ -102,8 +102,11 @@ def create_request(
         if existing.payload_hash != digest:
             raise HTTPException(409, "Idempotency key was used for a different payload")
         return summary(existing)
-    if not db.get(Application, payload.application_id):
+    application = db.get(Application, payload.application_id)
+    if not application:
         raise HTTPException(422, "Unknown application")
+    if payload.access_level not in application.levels:
+        raise HTTPException(422, "Unsupported entitlement")
     duplicate = db.scalar(
         select(AccessRequest.id).where(
             AccessRequest.requester_id == user.id,

@@ -11,8 +11,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm.exc import StaleDataError
-from app.api.routes import requests, operations
+from app.api.routes import requests, operations, tools
 from app.core.config import settings
+from app.security.body_limit import BodyLimitMiddleware
 from app.integrations.microsoft.providers import ProviderError
 
 app = FastAPI(title="AssessFlow API", version="1.0.0")
@@ -68,7 +69,7 @@ async def observability(request: Request, call_next):
             status_code=429,
             headers={"Retry-After": "60"},
         )
-    elif int(request.headers.get("content-length", "0")) > 200000:
+    elif len(await request.body()) > 200000:
         response = JSONResponse(
             {"error": {"code": "payload_too_large", "message": "Payload limit is 200KB"}},
             status_code=413,
@@ -158,3 +159,6 @@ def health() -> dict:
 
 app.include_router(requests.router)
 app.include_router(operations.router)
+app.include_router(tools.router)
+
+app.add_middleware(BodyLimitMiddleware)

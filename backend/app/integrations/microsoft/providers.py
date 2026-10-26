@@ -37,19 +37,21 @@ class PrivacyProvider:
                 if count:
                     categories.append(category)
             return Redaction(text, tuple(categories), "local-regex")
+        if not text.strip():
+            return Redaction(text, (), "azure-language-empty-input")
         try:
             with DefaultAzureCredential() as credential:
                 with TextAnalyticsClient(cfg.azure_language_endpoint, credential) as client:
                     result = client.recognize_pii_entities(
-                        [text],
+                        [text[i : i + 4000] for i in range(0, len(text), 4000)],
                         categories_filter=cfg.pii_categories.split(","),
                         disable_service_logs=True,
-                    )[0]
-                    if result.is_error:
+                    )
+                    if any(x.is_error for x in result):
                         raise ProviderError("PII detection failed")
                     return Redaction(
-                        result.redacted_text,
-                        tuple(x.category for x in result.entities),
+                        "".join(x.redacted_text for x in result),
+                        tuple(entity.category for x in result for entity in x.entities),
                         "azure-language",
                     )
         except Exception as exc:
@@ -57,6 +59,9 @@ class PrivacyProvider:
 
 
 class FoundryProvider:
+    def __init__(self):
+        self.usage = None
+
     def assess(self, request: dict, evidence: list[dict]) -> AssessmentOutput:
         cfg = settings()
         try:
@@ -71,9 +76,11 @@ class FoundryProvider:
                             input=json.dumps({"request": request, "evidence": evidence}),
                             text_format=AssessmentOutput,
                             store=False,
+                            timeout=30,
                         )
                         if result.output_parsed is None:
                             raise ProviderError("Model returned no validated assessment")
+                        self.usage = result.usage.model_dump() if result.usage else None
                         return result.output_parsed
         except Exception as exc:
             raise ProviderError("Foundry inference failed") from exc
@@ -84,7 +91,11 @@ class SearchProvider:
         cfg = settings()
         # Server controlled ACL; escape identifiers even though they originate in our database.
         department = department.replace("'", "''")
-        acl = f"(department eq 'all' or department eq '{department}')"
+        acl = (
+            "department ne null"
+            if department == "__admin__"
+            else f"(department eq 'all' or department eq '{department}')"
+        )
         if application_id:
             acl += " and application_id eq '" + application_id.replace("'", "''") + "'"
         try:
