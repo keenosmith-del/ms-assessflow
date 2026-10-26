@@ -1,0 +1,54 @@
+.table-scroll {
+  overflow-x: auto;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+th {
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #839087;
+  background: #fafbf9;
+  padding: 15px 23px;
+  font-weight: 600;
+}
+td {
+  font-size: 12px;
+  padding: 20px 23px;
+  border-top: 1px solid #f0f2ed;
+  color: #5c6861;
+}
+.request-title {
+  font-weight: 600;
+  color: #263d32;
+}
+.request-title small {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: #8a958e;
+  margin-top: 7px;
+}
+tbody tr:hover {
+  background: #fcfdfa;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+th {
+  position: relative;
+}
+.sr-only {
+  left: 0;
+  top: 0;
+  clip-path: inset(50%);
+}

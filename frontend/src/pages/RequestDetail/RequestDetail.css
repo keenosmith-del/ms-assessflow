@@ -1,0 +1,135 @@
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #77866d;
+  margin-bottom: 24px;
+}
+.detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin: 0 0 30px;
+}
+dt {
+  font-size: 10px;
+  color: #8a958c;
+  margin-bottom: 8px;
+}
+dd {
+  margin: 0;
+  font-size: 13px;
+  color: #374a3d;
+}
+.small-heading {
+  font-size: 11px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+}
+.body-copy {
+  font-size: 13px;
+  color: #687567;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.next-step {
+  background: #f0f4ec;
+  padding: 14px;
+  border-radius: 7px;
+  display: flex;
+  gap: 10px;
+  color: #6b7d61;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.assessment + .assessment {
+  border-top: 1px solid var(--line);
+}
+.assessment-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.assessment-meta > span:last-child {
+  font-size: 10px;
+  color: #8b9689;
+}
+blockquote {
+  margin: 12px 0;
+  border-left: 3px solid #b7cbb0;
+  background: #f6f8f2;
+  padding: 18px;
+  font-size: 12px;
+  line-height: 1.9;
+  color: #66795c;
+  overflow-wrap: anywhere;
+}
+cite {
+  display: block;
+  font-size: 9px;
+  font-style: normal;
+  color: #90a184;
+  margin-top: 12px;
+}
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 24px;
+}
+.timeline li {
+  border-left: 1px solid #d7dfd1;
+  padding: 0 0 25px 20px;
+  position: relative;
+}
+.timeline li:before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: #9cb08e;
+  border: 3px solid white;
+  border-radius: 50%;
+  position: absolute;
+  left: -7px;
+  top: 0;
+}
+.timeline li:last-child {
+  padding-bottom: 0;
+}
+.timeline strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+.timeline p {
+  font-size: 10px;
+  color: #82907b;
+  margin: 7px 0;
+}
+.timeline time {
+  font-size: 9px;
+  color: #a1aa9b;
+}
+.comment {
+  font-size: 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.comment p {
+  color: #7b8973;
+  white-space: pre-wrap;
+}
+.spaced-button {
+  margin-top: 12px;
+}
+@media (max-width: 1150px) {
+  .detail-columns {
+    grid-template-columns: 1fr;
+  }
+}

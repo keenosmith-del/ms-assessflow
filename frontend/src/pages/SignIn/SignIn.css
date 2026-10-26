@@ -1,0 +1,133 @@
+.signin {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.signin-story {
+  background: #193a32;
+  color: #e0eddc;
+  padding: 70px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.signin-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 27px;
+  margin-bottom: 110px;
+  letter-spacing: -1px;
+}
+.signin-story .eyebrow {
+  color: #97b78c;
+}
+.signin-story h1 {
+  font-size: 48px;
+  line-height: 1.2;
+  font-weight: 400;
+  margin: 24px 0;
+}
+.signin-story > p {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #a4bc9f;
+}
+.signin-assurance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: #a4bc9f;
+  margin-top: 100px;
+}
+.signin-form {
+  display: grid;
+  place-items: center;
+  padding: 50px 40px;
+}
+.signin-form > div {
+  width: 100%;
+  max-width: 380px;
+}
+.signin-form h2 {
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  font-weight: 500;
+  margin: 18px 0;
+}
+.signin-form p {
+  font-size: 13px;
+  color: #8a9581;
+  line-height: 1.9;
+  margin-bottom: 26px;
+}
+.identity-list {
+  display: grid;
+  gap: 10px;
+}
+.identity-list button {
+  background: white;
+  text-align: left;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #e3e8dc;
+}
+.identity-list strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+}
+.identity-list small {
+  display: block;
+  color: #87937d;
+  font-size: 10px;
+  margin-top: 5px;
+}
+.identity-list svg {
+  margin-left: auto;
+}
+.identity-list button:hover {
+  border-color: #9bad8b;
+  background: #f7faf3;
+}
+.signin-footnote {
+  display: block;
+  margin-top: 32px;
+  font-size: 10px;
+  color: #a0aa95;
+  line-height: 1.8;
+}
+@media (max-width: 900px) {
+  .signin-story {
+    padding: 50px 30px;
+  }
+  .signin-story h1 {
+    font-size: 36px;
+  }
+  .signin-brand {
+    margin-bottom: 70px;
+  }
+}
+@media (max-width: 650px) {
+  .signin {
+    grid-template-columns: 1fr;
+  }
+  .signin-story {
+    padding: 35px 25px;
+  }
+  .signin-brand {
+    margin-bottom: 30px;
+  }
+  .signin-story h1 {
+    font-size: 30px;
+  }
+  .signin-assurance {
+    display: none;
+  }
+  .signin-form {
+    padding: 40px 25px;
+  }
+}

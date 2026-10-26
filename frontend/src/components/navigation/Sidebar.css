@@ -1,0 +1,130 @@
+.sidebar {
+  position: fixed;
+  width: 236px;
+  inset: 0 auto 0 0;
+  background: var(--nav);
+  color: #c6d3d0;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+.brand-mark {
+  background: #c4e6cb;
+  color: #16352a;
+  width: 32px;
+  height: 35px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+.brand-dot {
+  font-size: 10px;
+  align-self: flex-start;
+  margin-top: 3px;
+}
+.workspace-label {
+  font-size: 9px;
+  letter-spacing: 1.7px;
+  color: #839e98;
+  margin: 52px 14px 18px;
+}
+.sidebar nav {
+  display: grid;
+  gap: 5px;
+}
+.sidebar nav a {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  color: #b9cbc5;
+  padding: 13px 15px;
+  border-radius: 7px;
+  font-size: 13px;
+}
+.sidebar nav a.active {
+  background: #2a4540;
+  color: #e2f4df;
+}
+.sidebar nav a:hover {
+  background: #233d38;
+}
+.sidebar-bottom {
+  margin-top: auto;
+}
+.guard-note {
+  border: 1px solid #34514b;
+  padding: 17px 14px;
+  border-radius: 8px;
+  font-size: 10px;
+  position: relative;
+}
+.guard-note p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #d9e7df;
+  margin: 16px 0 2px;
+}
+.guard-note > svg {
+  position: absolute;
+  right: 14px;
+  bottom: 18px;
+  color: #95b99f;
+}
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #afd6a9;
+  margin-right: 6px;
+}
+.sidebar-bottom small {
+  display: block;
+  font-size: 9px;
+  color: #829b94;
+  margin: 24px 10px 0;
+}
+@media (max-width: 1000px) {
+  .sidebar {
+    width: 200px;
+    padding: 28px 14px;
+  }
+  .brand {
+    font-size: 21px;
+  }
+}
+@media (max-width: 760px) {
+  .sidebar {
+    position: relative;
+    width: auto;
+    padding: 18px;
+  }
+  .sidebar .workspace-label,
+  .sidebar-bottom {
+    display: none;
+  }
+  .sidebar nav {
+    display: flex;
+    overflow: auto;
+    margin-top: 22px;
+    gap: 6px;
+  }
+  .sidebar nav a {
+    white-space: nowrap;
+    padding: 10px;
+  }
+  .brand {
+    font-size: 23px;
+  }
+}

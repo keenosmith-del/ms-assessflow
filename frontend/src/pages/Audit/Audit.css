@@ -1,0 +1,24 @@
+.audit-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  max-width: 760px;
+}
+.audit-correlation {
+  display: block;
+  font-size: 9px;
+  color: #9aa58f;
+  margin-top: 8px;
+}
+.audit-detail {
+  font-family: monospace;
+  white-space: normal;
+  max-width: 280px;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+}
+@media (max-width: 600px) {
+  .audit-filters {
+    flex-direction: column;
+  }
+}
